@@ -10,6 +10,7 @@ const host=process.env.HOST || 'localhost';
 
 const hakusivunPolku=path.join(__dirname,'hakusivu.html');
 //  __dirname = (kaksi alaviivaa) määrittää absoluuttisen polun (toimii windows/linux)
+const tyyliPolku=path.join(__dirname,'tyylit.css');
 
 const palvelin=http.createServer((request, response)=>{
     const urlData=url.parse(request.url, true);
@@ -30,12 +31,28 @@ const palvelin=http.createServer((request, response)=>{
             }
         });
     }
+    //reitti tyylitiedoston lataamiseen
+    else if(polku.startsWith('/tyylit')) {
+        fs.readFile(tyyliPolku,'utf8',(err,data)=>{
+            if(err) {
+                response.statusCode=404;
+                response.end(err.message);
+            }
+            else {
+                response.writeHead(200, {
+                    'Content-Type':'text/css',
+                    'Content-Length':Buffer.byteLength(data,'utf8')
+                });
+                response.end(data);
+            }
+        });
+    }
     else { //jos osoite /jotainMuuta
         response.setHeader(
             'Content-Type','text/plain; charset=utf-8'
         );
         response.statusCode=404;
-        response.end('ei löytynyt');
+        response.end('Sivua ei löytynyt');
     }
 
 });

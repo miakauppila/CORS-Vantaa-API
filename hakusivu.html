@@ -1,32 +1,11 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-    <meta charset="utf-8">
     <title>Vantaan avoimet työpaikat</title>
-    
-    <link rel="stylesheet" href="./tyylit.css" type="text/css">
+    <meta charset="utf-8">
+    <meta name="author" content="Mia Kauppila">
+    <link rel="stylesheet" href="tyylit.css" type="text/css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <style>
-        h1 {
-    font-size: 35px;
-}
-body {
-    max-width: 1000px;
-    margin: 0 auto; 
-}
-
-#tulos {
-    padding: 1em;
-}
-
-#piechart {
-    margin: 20px;
-    border:1px solid blueviolet;
-    padding: 1em;
-}
-
-    </style>
-
 </head>
 
 <script type="text/javascript">
@@ -47,20 +26,25 @@ google.charts.setOnLoadCallback(alusta);
         haeTiedot();
     }
 
+    const optiot = {
+    headers: {'Content-Type': 'application/json'},
+    mode: 'cors'
+    };
+
     function haeTiedot() {
-            fetch('http://gis.vantaa.fi/rest/tyopaikat/v1', {mode: 'cors'})
+            fetch('http://gis.vantaa.fi/rest/tyopaikat/v1', optiot)
                 .then(data=>data.json())
                 .then(jsonData=>paivitaTiedot(jsonData))
                 .catch(err=>console.log("virhe", err));
     }
     function paivitaTiedot(duunit) {
         tulos.innerHTML='';
-        
+        //vastaanotettu on JSON-array console.log(duunit);
         for(let duuni of duunit) {
             console.log(duuni);
             if(duuni.ammattiala=='kaikki'){
                 const li=document.createElement('li');
-                li.textContent=duuni.ammattiala + ' toimialat yhteensä:' + duuni.lukumäärä + ' kpl';
+                li.textContent=duuni.ammattiala + ' toimialat yhteensä: ' + duuni.lukumäärä + ' kpl';
                 tulos.appendChild(li);
             }
             else {
